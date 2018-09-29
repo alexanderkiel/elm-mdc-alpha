@@ -1,0 +1,32 @@
+{
+    "type": "package",
+    "name": "alexanderkiel/elm-mdc",
+    "summary": "Material Components for the Web for Elm",
+    "license": "BSD-3-Clause",
+    "version": "1.0.0",
+    "exposed-modules": [
+        "Material.Button",
+        "Material.Card",
+        "Material.Checkbox",
+        "Material.CircularProgress",
+        "Material.Dialog",
+        "Material.Fab",
+        "Material.FormField",
+        "Material.Icon",
+        "Material.LayoutGrid",
+        "Material.LinearProcess",
+        "Material.List",
+        "Material.Options",
+        "Material.RadioButton",
+        "Material.TextField",
+        "Material.TopAppBar"
+    ],
+    "elm-version": "0.19.0 <= v < 0.20.0",
+    "dependencies": {
+        "elm/core": "1.0.0 <= v < 2.0.0",
+        "elm/html": "1.0.0 <= v < 2.0.0",
+        "elm/parser": "1.1.0 <= v < 2.0.0",
+        "elm/svg": "1.0.1 <= v < 2.0.0"
+    },
+    "test-dependencies": {}
+}
