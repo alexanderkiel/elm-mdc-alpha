@@ -29,13 +29,17 @@ type alias Model context problem value =
     }
 
 
-init : Parser context problem value -> Maybe value -> Model context problem value
-init parser value =
+init :
+    Parser context problem value
+    -> (value -> String)
+    -> Maybe value
+    -> Model context problem value
+init parser printer value =
     { focused = False
     , parser = parser
     , value = value
     , parseError = []
-    , input = Nothing
+    , input = Maybe.map printer value
     }
 
 
@@ -75,35 +79,46 @@ update msg model =
 ---- VIEW ---------------------------------------------------------------------
 
 
-type alias Config =
-    { labelText : Maybe String
-    , labelFloat : Bool
-    , value : Maybe String
-    , defaultValue : Maybe String
-    , disabled : Bool
-    , dense : Bool
-    , required : Bool
-    , type_ : String
-    , box : Bool
-    , textarea : Bool
-    , fullWidth : Bool
-    , invalid : Bool
-    , outlined : Bool
-    , leadingIcon : Maybe String
-    , trailingIcon : Maybe String
-    , iconClickable : Bool
-    , placeholder : Maybe String
-    , cols : Maybe Int
-    , rows : Maybe Int
-    , id : Maybe String
+type alias Config msg value =
+    BaseConfig msg
+        value
+        { labelText : Maybe String
+        , labelFloat : Bool
+        , defaultValue : Maybe String
+        , disabled : Bool
+        , dense : Bool
+        , required : Bool
+        , type_ : String
+        , box : Bool
+        , textarea : Bool
+        , fullWidth : Bool
+        , invalid : Bool
+        , outlined : Bool
+        , leadingIcon : Maybe String
+        , trailingIcon : Maybe String
+        , iconClickable : Bool
+        , placeholder : Maybe String
+        , cols : Maybe Int
+        , rows : Maybe Int
+        , id : Maybe String
+        }
+
+
+type alias RequiredConfig msg value =
+    BaseConfig msg value {}
+
+
+type alias BaseConfig msg value a =
+    { a
+        | printer : value -> String
+        , lift : Msg -> msg
     }
 
 
-defaultConfig : Config
-defaultConfig =
+defaultConfig : RequiredConfig msg value -> Config msg value
+defaultConfig { printer, lift } =
     { labelText = Nothing
     , labelFloat = False
-    , value = Nothing
     , defaultValue = Nothing
     , disabled = False
     , dense = False
@@ -121,36 +136,43 @@ defaultConfig =
     , cols = Nothing
     , rows = Nothing
     , id = Nothing
+    , printer = printer
+    , lift = lift
     }
 
 
-type alias Property msg =
-    Options.Property Config msg
+type alias Property msg value =
+    Options.Property (Config msg value) msg
 
 
-view : (Msg -> msg) -> Model context problem value -> List (Property msg) -> List (Html msg) -> Html msg
-view lift model properties _ =
+view :
+    RequiredConfig msg value
+    -> Model context problem value
+    -> List (Property msg value)
+    -> List (Html msg)
+    -> Html msg
+view requiredConfig model properties _ =
     let
         ({ config } as summary) =
-            Options.collect defaultConfig properties
+            Options.collect (defaultConfig requiredConfig) properties
 
         focused =
             model.focused && not config.disabled
-
-        isDirty =
-            Maybe.map ((/=) "") model.input
-                |> Maybe.withDefault False
 
         isInvalid =
             not <| List.isEmpty model.parseError
 
         finalValue =
-            case model.input of
-                Just val ->
-                    val
+            if focused then
+                Maybe.withDefault "" model.input
 
-                Nothing ->
-                    Maybe.withDefault "" config.value
+            else
+                model.value
+                    |> Maybe.map config.printer
+                    |> Maybe.withDefault ""
+
+        isDirty =
+            finalValue /= ""
     in
     Options.apply summary
         Html.div
@@ -177,9 +199,9 @@ view lift model properties _ =
             , when (not config.textarea) <|
                 Options.attribute (Attr.type_ config.type_)
             , Options.attribute <| Attr.value finalValue
-            , Options.onFocus <| lift Focus
-            , Options.onBlur <| lift Blur
-            , Options.onInput <| (lift << Input)
+            , Options.onFocus <| config.lift Focus
+            , Options.onBlur <| config.lift Blur
+            , Options.onInput <| (config.lift << Input)
             ]
             []
         , if not config.fullWidth then
@@ -213,21 +235,21 @@ view lift model properties _ =
         ]
 
 
-fullWidth : Property msg
+fullWidth : Property msg value
 fullWidth =
     Options.updateConfig (\config -> { config | fullWidth = True })
 
 
-outlined : Property msg
+outlined : Property msg value
 outlined =
     Options.updateConfig (\config -> { config | outlined = True })
 
 
-label : String -> Property msg
+label : String -> Property msg value
 label str =
     Options.updateConfig (\config -> { config | labelText = Just str })
 
 
-id : String -> Property msg
+id : String -> Property msg value
 id str =
     Options.updateConfig (\config -> { config | id = Just str })
