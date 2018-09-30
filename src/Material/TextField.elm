@@ -2,6 +2,7 @@ module Material.TextField exposing
     ( Model
     , Msg
     , fullWidth
+    , id
     , init
     , label
     , outlined
@@ -11,30 +12,29 @@ module Material.TextField exposing
 
 import Html exposing (Html)
 import Html.Attributes as Attr
-import Html.Events as Events
 import Material.Internal.Options as Options exposing (class, styled, when)
-import Parser exposing (Parser)
+import Parser.Advanced as Parser exposing (Parser)
 
 
 
 ---- MODEL --------------------------------------------------------------------
 
 
-type alias Model value =
+type alias Model context problem value =
     { focused : Bool
-    , parser : Parser value
+    , parser : Parser context problem value
     , value : Maybe value
-    , parseError : Maybe (List Parser.DeadEnd)
+    , parseError : List (Parser.DeadEnd context problem)
     , input : Maybe String
     }
 
 
-init : Parser value -> Maybe value -> Model value
+init : Parser context problem value -> Maybe value -> Model context problem value
 init parser value =
     { focused = False
     , parser = parser
     , value = value
-    , parseError = Nothing
+    , parseError = []
     , input = Nothing
     }
 
@@ -49,7 +49,7 @@ type Msg
     | Input String
 
 
-update : Msg -> Model value -> Model value
+update : Msg -> Model context problem value -> Model context problem value
 update msg model =
     case msg of
         Focus ->
@@ -63,10 +63,10 @@ update msg model =
                 ( val, parseError ) =
                     case Parser.run model.parser str of
                         Ok v ->
-                            ( Just v, Nothing )
+                            ( Just v, [] )
 
                         Err err ->
-                            ( Nothing, Just err )
+                            ( Nothing, err )
             in
             { model | input = Just str, value = val, parseError = parseError }
 
@@ -128,7 +128,7 @@ type alias Property msg =
     Options.Property Config msg
 
 
-view : (Msg -> msg) -> Model value -> List (Property msg) -> List (Html msg) -> Html msg
+view : (Msg -> msg) -> Model context problem value -> List (Property msg) -> List (Html msg) -> Html msg
 view lift model properties _ =
     let
         ({ config } as summary) =
@@ -142,9 +142,7 @@ view lift model properties _ =
                 |> Maybe.withDefault False
 
         isInvalid =
-            model.parseError
-                |> Maybe.map (\_ -> True)
-                |> Maybe.withDefault False
+            not <| List.isEmpty model.parseError
 
         finalValue =
             case model.input of
@@ -154,8 +152,7 @@ view lift model properties _ =
                 Nothing ->
                     Maybe.withDefault "" config.value
     in
-    Options.apply
-        summary
+    Options.apply summary
         Html.div
         [ class "mdc-text-field"
         , class "mdc-text-field--focused" |> when focused
@@ -180,9 +177,9 @@ view lift model properties _ =
             , when (not config.textarea) <|
                 Options.attribute (Attr.type_ config.type_)
             , Options.attribute <| Attr.value finalValue
-            , Options.onInput <| (lift << Input)
             , Options.onFocus <| lift Focus
             , Options.onBlur <| lift Blur
+            , Options.onInput <| (lift << Input)
             ]
             []
         , if not config.fullWidth then
@@ -229,3 +226,8 @@ outlined =
 label : String -> Property msg
 label str =
     Options.updateConfig (\config -> { config | labelText = Just str })
+
+
+id : String -> Property msg
+id str =
+    Options.updateConfig (\config -> { config | id = Just str })

@@ -40,17 +40,17 @@ type alias Summary config msg =
 
 collect : config -> List (Property config msg) -> Summary config msg
 collect config =
-    collect_ (initialSummary config)
+    collectHelp (initialSummary config)
 
 
-collect_ : Summary config msg -> List (Property config msg) -> Summary config msg
-collect_ =
+collectHelp : Summary config msg -> List (Property config msg) -> Summary config msg
+collectHelp =
     List.foldl collect1
 
 
-collect__ : List (Property config msg) -> Summary () msg
-collect__ =
-    List.foldl collect1_ (initialSummary ())
+collectWithoutConfig : List (Property config msg) -> Summary () msg
+collectWithoutConfig =
+    List.foldl collectWithoutConfig1 (initialSummary ())
 
 
 collect1 : Property config msg -> Summary config msg -> Summary config msg
@@ -72,8 +72,8 @@ collect1 option summary =
             summary
 
 
-collect1_ : Property config msg -> Summary () msg -> Summary () msg
-collect1_ option summary =
+collectWithoutConfig1 : Property config msg -> Summary () msg -> Summary () msg
+collectWithoutConfig1 option summary =
     case option of
         Class className ->
             { summary | classNames = className :: summary.classNames }
@@ -107,7 +107,7 @@ apply :
     -> List (Attribute msg)
     -> a
 apply summary ctor properties attrs =
-    ctor (addAttrs (collect_ summary properties) attrs)
+    ctor (addAttrs (collectHelp summary properties) attrs)
 
 
 addAttrs : Summary config msg -> List (Attribute msg) -> List (Attribute msg)
@@ -138,7 +138,7 @@ styled :
     -> List (Property config msg)
     -> a
 styled ctor properties =
-    ctor (addAttrs (collect__ properties) [])
+    ctor (addAttrs (collectWithoutConfig properties) [])
 
 
 onClick : msg -> Property config msg

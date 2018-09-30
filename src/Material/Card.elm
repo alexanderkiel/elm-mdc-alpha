@@ -1,5 +1,5 @@
 module Material.Card exposing
-    ( Property(..)
+    ( Property
     , actionButton
     , actionButtons
     , actions
@@ -11,32 +11,33 @@ import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
 import Material.Button as Button
+import Material.Internal.Options as Options exposing (class, styled)
 
 
-type Property msg
-    = Class String
+type alias Property msg =
+    Options.Property () msg
 
 
 view : List (Property msg) -> List (Html msg) -> Html msg
 view properties =
-    Html.div [ Attr.class "mdc-card" ]
+    styled Html.div (class "mdc-card" :: properties)
 
 
 outlined : Property msg
 outlined =
-    Class "mdc-card--outlined"
+    class "mdc-card--outlined"
 
 
 actions : List (Property msg) -> List (Html msg) -> Html msg
 actions properties =
-    Html.div [ Attr.class "mdc-card__actions" ]
+    styled Html.div (class "mdc-card__actions" :: properties)
 
 
 actionButtons : List (Property msg) -> List (Html msg) -> Html msg
 actionButtons properties =
-    Html.div [ Attr.class "mdc-card__action-buttons" ]
+    styled Html.div (class "mdc-card__action-buttons" :: properties)
 
 
 actionButton : Button.Property msg
 actionButton =
-    Button.class "mdc-card__action mdc-card__action--button"
+    class "mdc-card__action mdc-card__action--button"

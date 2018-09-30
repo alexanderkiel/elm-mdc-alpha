@@ -8,7 +8,7 @@ module Material.CircularProgress exposing
 
 import Html exposing (Html)
 import Html.Attributes as Attr
-import Material.Internal.Options as Options exposing (class, style, styled, updateConfig, when)
+import Material.Internal.Options as Options exposing (class)
 import String
 import Svg
 import Svg.Attributes as SvgAttr
@@ -37,29 +37,28 @@ type alias Property msg =
 
 indeterminate : Property msg
 indeterminate =
-    updateConfig (\config -> { config | indeterminate = True })
+    Options.updateConfig (\config -> { config | indeterminate = True })
 
 
 determinate : Float -> Property msg
 determinate value =
-    updateConfig (\config -> { config | determinate = True, value = value })
+    Options.updateConfig (\config -> { config | determinate = True, value = value })
 
 
 reversed : Property msg
 reversed =
-    updateConfig (\config -> { config | reversed = True })
+    Options.updateConfig (\config -> { config | reversed = True })
 
 
 view : List (Property msg) -> List (Html msg) -> Html msg
-view options _ =
+view properties _ =
     let
         ({ config } as summary) =
-            Options.collect defaultConfig options
+            Options.collect defaultConfig properties
     in
     Options.apply summary
         Html.div
-        [ class "mdc-circular-progress"
-        ]
+        [ class "mdc-circular-progress" ]
         []
         [ Svg.svg
             [ SvgAttr.class "mdc-circular-progress__circle"

@@ -1,8 +1,11 @@
 module Material.Dialog exposing
-    ( body
-    , footer
-    , header
+    ( actions
+    , button
+    , container
+    , content
     , onClose
+    , open
+    , scrim
     , scrollable
     , surface
     , title
@@ -12,7 +15,8 @@ module Material.Dialog exposing
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
-import Material.Internal.Options as Options
+import Material.Button as Button
+import Material.Internal.Options as Options exposing (class, styled)
 
 
 type alias Config msg =
@@ -28,18 +32,16 @@ type alias Property msg =
     Options.Property (Config msg) msg
 
 
-view : List (Property msg) -> Bool -> List (Html msg) -> Html msg
-view properties open =
+view : List (Property msg) -> List (Html msg) -> Html msg
+view properties =
     let
         ({ config } as summary) =
             Options.collect defaultConfig properties
     in
-    Html.aside
-        [ Attr.classList
-            [ ( "mdc-dialog", True )
-            , ( "mdc-dialog--open", open )
-            ]
-        ]
+    Options.apply summary
+        Html.div
+        [ class "mdc-dialog" ]
+        []
 
 
 onClose : msg -> Property msg
@@ -47,35 +49,46 @@ onClose msg =
     Options.updateConfig (\config -> { config | onClose = Just msg })
 
 
-surface : List (Html msg) -> Html msg
-surface =
-    Html.div [ Attr.class "mdc-dialog__surface" ]
+container : List (Property msg) -> List (Html msg) -> Html msg
+container properties =
+    styled Html.div (class "mdc-dialog__container" :: properties)
 
 
-header : List (Html msg) -> Html msg
-header =
-    Html.header [ Attr.class "mdc-dialog__header" ]
+scrim : List (Property msg) -> List (Html msg) -> Html msg
+scrim properties =
+    styled Html.div (class "mdc-dialog__scrim" :: properties)
 
 
-title : Options.Property config msg
+surface : List (Property msg) -> List (Html msg) -> Html msg
+surface properties =
+    styled Html.div (class "mdc-dialog__surface" :: properties)
+
+
+title : Property msg
 title =
-    Options.class "mdc-dialog__header__title"
+    class "mdc-dialog__title"
 
 
-type alias BodyProperty msg =
-    Options.Property () msg
+open : Property msg
+open =
+    class "mdc-dialog--open"
 
 
-body : List (BodyProperty msg) -> List (Html msg) -> Html msg
-body properties =
-    Options.styled Html.section (Options.class "mdc-dialog__body" :: properties)
+button : Button.Property msg
+button =
+    class "mdc-dialog__button"
 
 
-scrollable : BodyProperty msg
+content : List (Property msg) -> List (Html msg) -> Html msg
+content properties =
+    styled Html.section (Options.class "mdc-dialog__content" :: properties)
+
+
+scrollable : Property msg
 scrollable =
-    Options.class "mdc-dialog__body--scrollable"
+    class "mdc-dialog--scrollable"
 
 
-footer : List (Html msg) -> Html msg
-footer =
-    Html.footer [ Attr.class "mdc-dialog__footer" ]
+actions : List (Html msg) -> Html msg
+actions =
+    Html.footer [ Attr.class "mdc-dialog__actions" ]

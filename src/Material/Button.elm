@@ -1,6 +1,5 @@
 module Material.Button exposing
     ( Property
-    , class
     , dense
     , disabled
     , icon
@@ -14,7 +13,7 @@ import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
 import Material.Icon as Icon
-import Material.Internal.Options as Options
+import Material.Internal.Options as Options exposing (class)
 
 
 type alias Config =
@@ -44,50 +43,40 @@ view properties childs =
         ({ config } as summary) =
             Options.collect defaultConfig properties
 
-        attrs =
-            [ Just <| Attr.disabled config.disabled ]
-                |> List.filterMap identity
-
         iconElem =
             config.iconName
-                |> Maybe.map (Icon.view [ Options.class "mdc-button__icon" ])
+                |> Maybe.map (Icon.view [ class "mdc-button__icon" ])
 
         newChilds =
             iconElem
                 |> Maybe.map (\x -> x :: childs)
                 |> Maybe.withDefault childs
     in
-    Options.apply
-        summary
+    Options.apply summary
         Html.button
-        [ Options.class "mdc-button" ]
-        attrs
+        [ class "mdc-button" ]
+        [ Attr.disabled config.disabled ]
         newChilds
 
 
 outlined : Property msg
 outlined =
-    Options.class "mdc-button--outlined"
+    class "mdc-button--outlined"
 
 
 dense : Property msg
 dense =
-    Options.class "mdc-button--dense"
+    class "mdc-button--dense"
 
 
 raised : Property msg
 raised =
-    Options.class "mdc-button--raised"
+    class "mdc-button--raised"
 
 
 unelevated : Property msg
 unelevated =
-    Options.class "mdc-button--unelevated"
-
-
-class : String -> Property msg
-class name =
-    Options.class name
+    class "mdc-button--unelevated"
 
 
 icon : String -> Property msg
