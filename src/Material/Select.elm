@@ -11,6 +11,8 @@ module Material.Select exposing
 
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Html.Events as Events
+import Json.Decode as Decode
 import Material.Internal.Options as Options exposing (class, styled, when)
 
 
@@ -108,7 +110,8 @@ view lift model properties items =
             , Options.attribute (Attr.disabled True) |> when config.disabled
             , Options.onFocus <| lift Focus
             , Options.onBlur <| lift Blur
-            , Options.onInput <| (lift << Input)
+            , Events.on "change" (Decode.map (lift << Input) Events.targetValue)
+                |> Options.attribute
             ]
             allItems
         , styled
