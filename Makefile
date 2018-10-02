@@ -1,4 +1,7 @@
-install-elm
-	yarn add elm --save-dev
+install-elm:
+	npm install elm
 
-.PHONY: install-elm
+build:
+	elm make src/Material/*.elm
+
+.PHONY: install-elm, build

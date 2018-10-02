@@ -1,6 +1,6 @@
 {
     "type": "package",
-    "name": "alexanderkiel/elm-mdc",
+    "name": "alexanderkiel/elm-mdc-alpha",
     "summary": "Material Components for the Web for Elm",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
