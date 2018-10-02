@@ -3,7 +3,7 @@
     "name": "alexanderkiel/elm-mdc-alpha",
     "summary": "Material Components for the Web for Elm",
     "license": "BSD-3-Clause",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "exposed-modules": [
         "Material.Button",
         "Material.Card",
@@ -19,6 +19,7 @@
         "Material.Options",
         "Material.RadioButton",
         "Material.TextField",
+        "Material.TextField.HelperText",
         "Material.TopAppBar"
     ],
     "elm-version": "0.19.0 <= v < 0.20.0",
