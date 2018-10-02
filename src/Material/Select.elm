@@ -2,7 +2,6 @@ module Material.Select exposing
     ( Model
     , Msg
     , Property
-    , id
     , init
     , label
     , update
@@ -105,8 +104,7 @@ view lift model properties items =
         [ styled
             Html.select
             [ class "mdc-select__native-control"
-            , Maybe.map Options.id config.id
-                |> Maybe.withDefault Options.noOp
+            , Options.id config.id
             , Options.attribute (Attr.disabled True) |> when config.disabled
             , Options.onFocus <| lift Focus
             , Options.onBlur <| lift Blur
@@ -117,10 +115,9 @@ view lift model properties items =
         , styled
             Html.label
             [ class "mdc-floating-label"
-            , Options.class "mdc-floating-label--float-above"
+            , class "mdc-floating-label--float-above"
                 |> when (focused || isDirty)
-            , Maybe.map Options.for config.id
-                |> Maybe.withDefault Options.noOp
+            , Options.for config.id
             ]
             (case config.labelText of
                 Just str ->
@@ -140,8 +137,3 @@ view lift model properties items =
 label : String -> Property msg
 label str =
     Options.updateConfig (\config -> { config | labelText = Just str })
-
-
-id : String -> Property msg
-id str =
-    Options.updateConfig (\config -> { config | id = Just str })

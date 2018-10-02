@@ -1,10 +1,26 @@
 module Material.CircularProgress exposing
-    ( Property
+    ( view
     , determinate
     , indeterminate
     , reversed
-    , view
     )
+
+{-| Progress indicators express an unspecified wait time or display the length
+of a process.
+
+
+# View
+
+@docs view
+
+
+# Properties
+
+@docs determinate
+@docs indeterminate
+@docs reversed
+
+-}
 
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -35,21 +51,25 @@ type alias Property msg =
     Options.Property Config msg
 
 
+{-| -}
 indeterminate : Property msg
 indeterminate =
     Options.updateConfig (\config -> { config | indeterminate = True })
 
 
+{-| -}
 determinate : Float -> Property msg
 determinate value =
     Options.updateConfig (\config -> { config | determinate = True, value = value })
 
 
+{-| -}
 reversed : Property msg
 reversed =
     Options.updateConfig (\config -> { config | reversed = True })
 
 
+{-| -}
 view : List (Property msg) -> List (Html msg) -> Html msg
 view properties _ =
     let

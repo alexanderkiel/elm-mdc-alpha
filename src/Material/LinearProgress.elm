@@ -1,11 +1,27 @@
 module Material.LinearProgress exposing
-    ( Property
+    ( view
     , buffered
     , determinate
     , indeterminate
     , reversed
-    , view
     )
+
+{-| Progress indicators express an unspecified wait time or display the length of a process.
+
+
+# View
+
+@docs view
+
+
+# Properties
+
+@docs buffered
+@docs determinate
+@docs indeterminate
+@docs reversed
+
+-}
 
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -38,26 +54,31 @@ type alias Property msg =
     Options.Property Config msg
 
 
+{-| -}
 indeterminate : Property msg
 indeterminate =
     updateConfig (\config -> { config | indeterminate = True })
 
 
+{-| -}
 determinate : Float -> Property msg
 determinate value =
     updateConfig (\config -> { config | determinate = True, value = value })
 
 
+{-| -}
 buffered : Float -> Float -> Property msg
 buffered value buffer =
     updateConfig (\config -> { config | buffered = True, value = value, buffer = buffer })
 
 
+{-| -}
 reversed : Property msg
 reversed =
     updateConfig (\config -> { config | reversed = True })
 
 
+{-| -}
 view : List (Property msg) -> List (Html msg) -> Html msg
 view options _ =
     let

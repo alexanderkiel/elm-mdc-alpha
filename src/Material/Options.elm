@@ -1,33 +1,63 @@
 module Material.Options exposing
-    ( Property
-    , class
+    ( class
     , id
-    , noOp
     , onClick
     , style
-    , styled
     , when
+    , styled
     )
+
+{-| Common properties for Material components.
+
+
+# Properties
+
+@docs class
+@docs id
+@docs onClick
+@docs style
+
+
+# Modifier
+
+@docs when
+
+
+# Working with HTML
+
+@docs styled
+
+-}
 
 import Html exposing (Attribute)
 import Html.Attributes
-import Material.Internal.Options as Options
+import Material.Internal.Options as Options exposing (Property)
 
 
-type alias Property config msg =
-    Options.Property config msg
-
-
-class : String -> Property c m
+{-| A single CSS class property.
+-}
+class : String -> Property config msg
 class =
     Options.class
 
 
-style : String -> String -> Property c m
+{-| A CSS style as property.
+-}
+style : String -> String -> Property config msg
 style =
     Options.style
 
 
+{-| Style HTML elements using properties instead of HTML attributes.
+
+    Takes an HTML element constructor and a list of properties and returns that
+    element constructor with the corresponding HTML attributes applied.
+
+    Example:
+
+        styled Html.h2 [ class "title" ]
+
+-}
 styled :
     (List (Attribute msg) -> a)
     -> List (Property config msg)
@@ -36,20 +66,28 @@ styled =
     Options.styled
 
 
+{-| Like HTML onClick but as property.
+-}
 onClick : msg -> Property config msg
 onClick =
     Options.onClick
 
 
-noOp : Property config msg
-noOp =
-    Options.noOp
+{-| Conditionally apply a property.
 
+    Example:
 
+        onClick Msg |> when enabled
+
+-}
 when : Bool -> Property config msg -> Property config msg
 when =
     Options.when
 
 
-id =
-    Options.id
+{-| Sets the HTML id attribute of a component. In components like `Checkbox` or
+`TextField` the id is set on the native control HTML element.
+-}
+id : String -> Property { config | id : Maybe String } msg
+id s =
+    Options.updateConfig (\config -> { config | id = Just s })

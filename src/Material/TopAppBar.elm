@@ -1,112 +1,126 @@
 module Material.TopAppBar exposing
-    ( Property(..)
-    , SectionProperty(..)
+    ( view
+    , section
+    , navigationIcon
+    , title
     , actionIcon
     , alignEnd
     , alignStart
     , dense
     , fixed
-    , navigationIcon
-    , prominent
-    , section
     , short
-    , title
-    , view
+    , prominent
     )
+
+{-| The top app bar displays information and actions relating to the current screen.
+
+
+# Install
+
+In your application install:
+
+    npm install "@material/top-app-bar"
+
+In your Sass file import:
+
+    @import "@material/top-app-bar/mdc-top-app-bar";
+
+
+# View
+
+@docs view
+@docs section
+@docs navigationIcon
+@docs title
+@docs actionIcon
+
+
+# Properties
+
+@docs alignEnd
+@docs alignStart
+@docs dense
+@docs fixed
+@docs short
+@docs prominent
+
+
+# Reference
+
+  - [Design](https://material.io/design/components/app-bars-top.html)
+  - [Develop](https://material.io/develop/web/components/top-app-bar/)
+
+-}
 
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Material.Internal.Options as Options exposing (class, styled)
 
 
-type Property
-    = Class String
+type alias Property msg =
+    Options.Property () msg
 
 
-view : List Property -> List (Html msg) -> Html msg
+{-| -}
+view : List (Property msg) -> List (Html msg) -> Html msg
 view properties sections =
-    let
-        toClass property =
-            case property of
-                Class class ->
-                    class
-
-        classAttr =
-            "mdc-top-app-bar mdc-elevation--z4"
-                :: List.map toClass properties
-                |> String.join " "
-                |> Attr.class
-    in
-    Html.header [ classAttr ]
+    styled Html.header
+        (class "mdc-top-app-bar" :: properties)
         [ Html.div [ Attr.class "mdc-top-app-bar__row" ] sections ]
 
 
 {-| Short top app bars are top app bars that can collapse to the navigation icon
 side when scrolled.
 -}
-short : Property
+short : Property msg
 short =
-    Class "mdc-top-app-bar--short"
+    class "mdc-top-app-bar--short"
 
 
 {-| Fixed top app bars stay at the top of the page and elevate above the content
 when scrolled.
 -}
-fixed : Property
+fixed : Property msg
 fixed =
-    Class "mdc-top-app-bar--fixed"
+    class "mdc-top-app-bar--fixed"
 
 
 {-| The prominent top app bar is taller.
 -}
-prominent : Property
+prominent : Property msg
 prominent =
-    Class "mdc-top-app-bar--prominent"
+    class "mdc-top-app-bar--prominent"
 
 
 {-| The dense top app bar is shorter.
 -}
-dense : Property
+dense : Property msg
 dense =
-    Class "mdc-top-app-bar--dense"
+    class "mdc-top-app-bar--dense"
 
 
 
 ---- SECTION ------------------------------------------------------------------
 
 
-type SectionProperty
-    = SectionClass String
-
-
-section : List SectionProperty -> List (Html msg) -> Html msg
-section properties childs =
-    let
-        toClass property =
-            case property of
-                SectionClass class ->
-                    class
-
-        classAttr =
-            "mdc-top-app-bar__section"
-                :: List.map toClass properties
-                |> String.join " "
-                |> Attr.class
-    in
-    Html.section [ classAttr ] childs
+{-| -}
+section : List (Property msg) -> List (Html msg) -> Html msg
+section properties =
+    styled Html.section (class "mdc-top-app-bar__section" :: properties)
 
 
 {-| Make section align to the start.
 -}
-alignStart : SectionProperty
+alignStart : Property msg
 alignStart =
-    SectionClass "mdc-top-app-bar__section--align-start"
+    class "mdc-top-app-bar__section--align-start"
 
 
 {-| Make section align to the end.
 -}
-alignEnd : SectionProperty
+alignEnd : Property msg
 alignEnd =
-    SectionClass "mdc-top-app-bar__section--align-end"
+    class "mdc-top-app-bar__section--align-end"
 
 
 
@@ -124,6 +138,7 @@ navigationIcon name =
         [ Html.text name ]
 
 
+{-| -}
 title : String -> Html msg
 title name =
     Html.span
@@ -131,6 +146,7 @@ title name =
         [ Html.text name ]
 
 
+{-| -}
 actionIcon : String -> Html msg
 actionIcon name =
     Html.a

@@ -1,14 +1,58 @@
 module Material.TextField exposing
     ( Model
-    , Msg
-    , fullWidth
-    , id
     , init
-    , label
-    , outlined
+    , Msg
     , update
     , view
+    , fullWidth
+    , outlined
+    , label
     )
+
+{-| Text fields let users enter and edit text.
+
+
+# Install
+
+In your application install:
+
+    npm install "@material/textfield"
+
+In your Sass file import:
+
+    @import "@material/textfield/mdc-text-field";
+
+
+# Model
+
+@docs Model
+@docs init
+
+
+# Update
+
+@docs Msg
+@docs update
+
+
+# View
+
+@docs view
+
+
+# Properties
+
+@docs fullWidth
+@docs outlined
+@docs label
+
+
+# Reference
+
+  - [Design](https://material.io/design/components/text-fields.html)
+  - [Develop](https://material.io/develop/web/components/input-controls/text-field/)
+
+-}
 
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -20,6 +64,7 @@ import Parser.Advanced as Parser exposing (Parser)
 ---- MODEL --------------------------------------------------------------------
 
 
+{-| -}
 type alias Model context problem value =
     { focused : Bool
     , parser : Parser context problem value
@@ -29,6 +74,7 @@ type alias Model context problem value =
     }
 
 
+{-| -}
 init :
     Parser context problem value
     -> (value -> String)
@@ -47,12 +93,14 @@ init parser printer value =
 ---- UPDATE -------------------------------------------------------------------
 
 
+{-| -}
 type Msg
     = Focus
     | Blur
     | Input String
 
 
+{-| -}
 update : Msg -> Model context problem value -> Model context problem value
 update msg model =
     case msg of
@@ -145,6 +193,7 @@ type alias Property msg value =
     Options.Property (Config msg value) msg
 
 
+{-| -}
 view :
     RequiredConfig msg value
     -> Model context problem value
@@ -194,8 +243,7 @@ view requiredConfig model properties _ =
                 Html.input
             )
             [ class "mdc-text-field__input"
-            , Maybe.map Options.id config.id
-                |> Maybe.withDefault Options.noOp
+            , Options.id config.id
             , when (not config.textarea) <|
                 Options.attribute (Attr.type_ config.type_)
             , Options.attribute <| Attr.value finalValue
@@ -207,11 +255,10 @@ view requiredConfig model properties _ =
         , if not config.fullWidth then
             styled
                 Html.label
-                [ Options.class "mdc-floating-label"
-                , Options.class "mdc-floating-label--float-above"
+                [ class "mdc-floating-label"
+                , class "mdc-floating-label--float-above"
                     |> when (focused || isDirty)
-                , Maybe.map Options.for config.id
-                    |> Maybe.withDefault Options.noOp
+                , Options.for config.id
                 ]
                 (case config.labelText of
                     Just str ->
@@ -235,21 +282,19 @@ view requiredConfig model properties _ =
         ]
 
 
+{-| -}
 fullWidth : Property msg value
 fullWidth =
     Options.updateConfig (\config -> { config | fullWidth = True })
 
 
+{-| -}
 outlined : Property msg value
 outlined =
     Options.updateConfig (\config -> { config | outlined = True })
 
 
+{-| -}
 label : String -> Property msg value
 label str =
     Options.updateConfig (\config -> { config | labelText = Just str })
-
-
-id : String -> Property msg value
-id str =
-    Options.updateConfig (\config -> { config | id = Just str })

@@ -180,11 +180,13 @@ when guard prop =
         noOp
 
 
-id : String -> Property config msg
-id =
-    Attribute << Attr.id
+id : Maybe String -> Property config msg
+id val =
+    Maybe.map (Attribute << Attr.id) val
+        |> Maybe.withDefault noOp
 
 
-for : String -> Property config msg
-for =
-    Attribute << Attr.for
+for : Maybe String -> Property config msg
+for val =
+    Maybe.map (Attribute << Attr.for) val
+        |> Maybe.withDefault noOp
