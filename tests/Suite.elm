@@ -15,9 +15,9 @@ import Material.Options as Options exposing (styled)
 import Material.RadioButton as RadioButton
 import Material.Select as Select
 import Material.TextField as TextField
+import Material.TopAppBar
 import Parser.Advanced as Parser
 import Test exposing (..)
-import Material.TopAppBar
 
 
 checkboxTest : Test
@@ -58,6 +58,7 @@ elevationTest =
 type Msg
     = Select Select.Msg
     | TextField TextField.Msg
+    | Clicked
 
 
 selectTest : Test
@@ -72,6 +73,16 @@ selectTest =
 
                     _ =
                         Select.view Select model [ Options.id "id-132935" ] []
+                in
+                Expect.pass
+        , test "can add click handler" <|
+            \_ ->
+                let
+                    model =
+                        Select.init Nothing
+
+                    _ =
+                        Select.view Select model [ Options.onClick Clicked ] []
                 in
                 Expect.pass
         ]

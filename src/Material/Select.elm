@@ -1,12 +1,54 @@
 module Material.Select exposing
     ( Model
-    , Msg
-    , Property
     , init
-    , label
+    , Msg
     , update
     , view
+    , label
     )
+
+{-| MDC Select provides Material Design single-option select menus.
+
+
+# Install
+
+In your application install:
+
+    npm install "@material/select"
+
+In your Sass file import:
+
+    @import "@material/select/mdc-select";
+
+
+# Model
+
+@docs Model
+@docs init
+
+
+# Update
+
+@docs Msg
+@docs update
+
+
+# View
+
+@docs view
+
+
+# Properties
+
+@docs label
+
+
+# Reference
+
+  - [Design](https://material.io/design/components/text-fields.html)
+  - [Develop](https://material.io/develop/web/components/input-controls/select-menus/)
+
+-}
 
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -19,12 +61,16 @@ import Material.Internal.Options as Options exposing (class, styled, when)
 ---- MODEL --------------------------------------------------------------------
 
 
+{-| For each select, place a model value in your model.
+-}
 type alias Model =
     { focused : Bool
     , value : Maybe String
     }
 
 
+{-| Initializes the select menu with the following value.
+-}
 init : Maybe String -> Model
 init value =
     { focused = False
@@ -36,12 +82,18 @@ init value =
 ---- UPDATE -------------------------------------------------------------------
 
 
+{-| Internal message type. Create a message which transports messages of that
+type.
+-}
 type Msg
     = Focus
     | Blur
-    | Input String
+    | Change String
 
 
+{-| Internal update function. Has to be called by your module on messages from
+every select menu you use.
+-}
 update : Msg -> Model -> Model
 update msg model =
     case msg of
@@ -51,8 +103,8 @@ update msg model =
         Blur ->
             { model | focused = False }
 
-        Input str ->
-            { model | value = Just str }
+        Change newValue ->
+            { model | value = Just newValue }
 
 
 
@@ -78,6 +130,11 @@ type alias Property msg =
     Options.Property Config msg
 
 
+{-| Renders a select menu.
+
+    Takes a message lifter and the model.
+
+-}
 view : (Msg -> msg) -> Model -> List (Property msg) -> List (Html msg) -> Html msg
 view lift model properties items =
     let
@@ -108,7 +165,7 @@ view lift model properties items =
             , Options.attribute (Attr.disabled True) |> when config.disabled
             , Options.onFocus <| lift Focus
             , Options.onBlur <| lift Blur
-            , Events.on "change" (Decode.map (lift << Input) Events.targetValue)
+            , Events.on "change" (Decode.map (lift << Change) Events.targetValue)
                 |> Options.attribute
             ]
             allItems
@@ -134,6 +191,8 @@ view lift model properties items =
         ]
 
 
+{-| Sets the label text. The selects label will be empty without setting this.
+-}
 label : String -> Property msg
 label str =
     Options.updateConfig (\config -> { config | labelText = Just str })
