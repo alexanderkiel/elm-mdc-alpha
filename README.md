@@ -6,7 +6,7 @@ This is an yet unfinished variant of [aforemny/elm-mdc][1] without the central s
 
 ## Usage
 
-The aim of this package is to give you a light binding from Elm to Material Components for the Web. This package doesn't need any JavaScript and asks you import the required CSS classes yourself. Doing so you have pure Elm code and cave full power over how you import the required CSS classes. The documentation will show you how to import CSS using npm and Sass.
+The aim of this package is to give you a light binding from Elm to Material Components for the Web. This package doesn't need any JavaScript and asks you import the required CSS classes yourself. Doing so you have pure Elm code and have full power over how you import the required CSS classes. The documentation will show you how to import CSS using npm and Sass.
 
 ## Build
 
