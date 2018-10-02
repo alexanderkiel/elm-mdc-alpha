@@ -3,6 +3,7 @@ module Material.Options exposing
     , id
     , onClick
     , style
+    , noOp
     , when
     , styled
     )
@@ -16,6 +17,7 @@ module Material.Options exposing
 @docs id
 @docs onClick
 @docs style
+@docs noOp
 
 
 # Modifier
@@ -91,3 +93,18 @@ when =
 id : String -> Property { config | id : Maybe String } msg
 id s =
     Options.updateConfig (\config -> { config | id = Just s })
+
+
+{-| A property which just does nothing.
+
+    This is useful in `Maybe.withDefault`.
+
+    Example:
+
+        Maybe.map (onClick << Tell) maybeValue
+            |> Maybe.withDefault Options.noOp
+
+-}
+noOp : Property config msg
+noOp =
+    Options.noOp
