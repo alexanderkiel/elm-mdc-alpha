@@ -1,5 +1,6 @@
 module Material.TextField exposing
     ( Model
+    , SimpleModel
     , init
     , Msg
     , update
@@ -25,6 +26,7 @@ In your Sass file import:
 
 # Model
 
+@docs SimpleModel
 @docs Model
 @docs init
 
@@ -60,6 +62,7 @@ import Material.Internal.Options as Options exposing (class, styled, when)
 import Parser.Advanced as Parser exposing (Parser)
 
 
+import Parser as SimpleParser exposing (Problem)
 
 ---- MODEL --------------------------------------------------------------------
 
@@ -73,6 +76,7 @@ type alias Model context problem value =
     , input : Maybe String
     }
 
+type alias SimpleModel value = Model Never SimpleParser.Problem value
 
 {-| -}
 init :
