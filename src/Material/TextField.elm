@@ -1,5 +1,5 @@
 module Material.TextField exposing
-    ( SimpleModel
+    ( AdvancedModel
     , Model
     , init
     , Msg
@@ -73,7 +73,7 @@ import Parser.Advanced as Parser exposing (Parser)
 
 
 {-| -}
-type alias Model context problem value =
+type alias AdvancedModel context problem value =
     { focused : Bool
     , parser : Parser context problem value
     , value : Maybe value
@@ -82,8 +82,8 @@ type alias Model context problem value =
     }
 
 
-type alias SimpleModel value =
-    Model Never SimpleParser.Problem value
+type alias Model value =
+    AdvancedModel Never SimpleParser.Problem value
 
 
 {-| -}
@@ -91,7 +91,7 @@ init :
     Parser context problem value
     -> (value -> String)
     -> Maybe value
-    -> Model context problem value
+    -> AdvancedModel context problem value
 init parser printer value =
     { focused = False
     , parser = parser
@@ -113,7 +113,7 @@ type Msg
 
 
 {-| -}
-update : Msg -> Model context problem value -> Model context problem value
+update : Msg -> AdvancedModel context problem value -> AdvancedModel context problem value
 update msg model =
     case msg of
         Focus ->
@@ -208,7 +208,7 @@ type alias Property msg value =
 {-| -}
 view :
     RequiredConfig msg value
-    -> Model context problem value
+    -> AdvancedModel context problem value
     -> List (Property msg value)
     -> List (Html msg)
     -> Html msg
