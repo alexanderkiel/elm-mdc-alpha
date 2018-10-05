@@ -77,6 +77,17 @@ type alias Property msg =
 
 
 {-| Renders a button.
+
+import Material.Button as Button
+import Material.Options as Options
+
+Button.view 
+    [ Options.onClick Inc 
+    , Button.disabled False
+    , Button.raised
+    ] 
+    [ Html.text "Plus 1" ]
+
 -}
 view : List (Property msg) -> List (Html msg) -> Html msg
 view properties childs =
