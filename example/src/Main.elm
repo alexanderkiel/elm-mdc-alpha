@@ -128,6 +128,7 @@ myTextField { textFieldModel } =
             { lift = ChangedText, printer = identity }
             textFieldModel
             [ TextField.label "Label of input"
+
             -- grab whole space
             , Options.displayBlock
             , Options.id "id456"
