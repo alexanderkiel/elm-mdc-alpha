@@ -6,6 +6,7 @@ module Material.Options exposing
     , noOp
     , when
     , styled
+    , displayBlock
     )
 
 {-| Common properties for Material components.
@@ -28,6 +29,7 @@ module Material.Options exposing
 # Working with HTML
 
 @docs styled
+@docs displayBlock
 
 -}
 
@@ -66,6 +68,10 @@ styled :
     -> a
 styled =
     Options.styled
+
+
+displayBlock : Property config msg
+displayBlock = Options.style "display" "block"
 
 
 {-| Like HTML onClick but as property.
