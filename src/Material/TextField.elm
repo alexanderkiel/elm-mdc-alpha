@@ -1,5 +1,6 @@
 module Material.TextField exposing
-    ( Model
+    ( AdvancedModel
+    , Model
     , init
     , Msg
     , update
@@ -7,6 +8,8 @@ module Material.TextField exposing
     , fullWidth
     , outlined
     , label
+    , withLeadingIcon
+    , withTrailingIcon
     )
 
 {-| Text fields let users enter and edit text.
@@ -25,6 +28,7 @@ In your Sass file import:
 
 # Model
 
+@docs SimpleModel
 @docs Model
 @docs init
 
@@ -45,6 +49,8 @@ In your Sass file import:
 @docs fullWidth
 @docs outlined
 @docs label
+@docs withLeadingIcon
+@docs withTrailingIcon
 
 
 # Reference
@@ -56,16 +62,29 @@ In your Sass file import:
 
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Material.Icon as Icon
 import Material.Internal.Options as Options exposing (class, styled, when)
+import Parser as SimpleParser exposing (Problem)
 import Parser.Advanced as Parser exposing (Parser)
 
 
 
 ---- MODEL --------------------------------------------------------------------
 
+{-| -}
+type alias Model value =
+    AdvancedModel Never SimpleParser.Problem value
 
 {-| -}
-type alias Model context problem value =
+init : 
+    SimpleParser.Parser value
+    -> (value -> String)
+    -> Maybe value
+    -> Model value
+init parser printer = advancedInit parser printer
+
+{-| -}
+type alias AdvancedModel context problem value =
     { focused : Bool
     , parser : Parser context problem value
     , value : Maybe value
@@ -73,14 +92,13 @@ type alias Model context problem value =
     , input : Maybe String
     }
 
-
 {-| -}
-init :
+advancedInit :
     Parser context problem value
     -> (value -> String)
     -> Maybe value
-    -> Model context problem value
-init parser printer value =
+    -> AdvancedModel context problem value
+advancedInit parser printer value =
     { focused = False
     , parser = parser
     , value = value
@@ -101,7 +119,7 @@ type Msg
 
 
 {-| -}
-update : Msg -> Model context problem value -> Model context problem value
+update : Msg -> AdvancedModel context problem value -> AdvancedModel context problem value
 update msg model =
     case msg of
         Focus ->
@@ -196,20 +214,20 @@ type alias Property msg value =
 {-| -}
 view :
     RequiredConfig msg value
-    -> Model context problem value
+    -> AdvancedModel context problem value
     -> List (Property msg value)
     -> List (Html msg)
     -> Html msg
-view requiredConfig model properties _ =
+view requiredConfig model properties children =
     let
         ({ config } as summary) =
             Options.collect (defaultConfig requiredConfig) properties
 
-        focused =
-            model.focused && not config.disabled
-
         isInvalid =
             not <| List.isEmpty model.parseError
+
+        focused =
+            (model.focused && not config.disabled) || isInvalid
 
         finalValue =
             if focused then
@@ -222,6 +240,10 @@ view requiredConfig model properties _ =
 
         isDirty =
             finalValue /= ""
+
+        iconAllowed =
+            -- only in default or outline mode
+            not config.textarea
     in
     Options.apply summary
         Html.div
@@ -233,9 +255,20 @@ view requiredConfig model properties _ =
         , class "mdc-text-field--invalid" |> when isInvalid
         , class "mdc-text-field--textarea" |> when config.textarea
         , class "mdc-text-field--outlined" |> when config.outlined
+        , class "mdc-text-field--with-leading-icon" |> when (config.leadingIcon /= Nothing)
+        , class "mdc-text-field--with-trailing-icon" |> when (config.trailingIcon /= Nothing)
         ]
         []
-        [ styled
+        [ -- icon
+          if Nothing == config.leadingIcon || not iconAllowed then
+            Html.text ""
+
+          else
+            Icon.view
+                [ Options.class "mdc-text-field__icon" ]
+                (config.leadingIcon |> Maybe.withDefault "unknown")
+        , -- input or textArea
+          styled
             (if config.textarea then
                 Html.textarea
 
@@ -252,7 +285,9 @@ view requiredConfig model properties _ =
             , Options.onInput <| (config.lift << Input)
             ]
             []
-        , if not config.fullWidth then
+        , -- label
+          -- no label in fullWidth
+          if not config.fullWidth then
             styled
                 Html.label
                 [ class "mdc-floating-label"
@@ -267,6 +302,20 @@ view requiredConfig model properties _ =
                     Nothing ->
                         []
                 )
+
+          else
+            Html.text ""
+        , -- icon
+          if Nothing == config.trailingIcon || not iconAllowed then
+            Html.text ""
+
+          else
+            Icon.view
+                [ Options.class "mdc-text-field__icon" ]
+                (config.trailingIcon |> Maybe.withDefault "unknown")
+        , if config.outlined then
+            -- TODO how should we add svg for outlined and label above problem
+            styled Html.div [ class "mdc-notched-outline__idle" ] []
 
           else
             Html.text ""
@@ -298,3 +347,15 @@ outlined =
 label : String -> Property msg value
 label str =
     Options.updateConfig (\config -> { config | labelText = Just str })
+
+
+{-| -}
+withLeadingIcon : String -> Property msg value
+withLeadingIcon iconName =
+    Options.updateConfig (\config -> { config | leadingIcon = Just iconName })
+
+
+{-| -}
+withTrailingIcon : String -> Property msg value
+withTrailingIcon iconName =
+    Options.updateConfig (\config -> { config | trailingIcon = Just iconName })
