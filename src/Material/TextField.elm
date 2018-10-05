@@ -71,6 +71,17 @@ import Parser.Advanced as Parser exposing (Parser)
 
 ---- MODEL --------------------------------------------------------------------
 
+{-| -}
+type alias Model value =
+    AdvancedModel Never SimpleParser.Problem value
+
+{-| -}
+init : 
+    SimpleParser.Parser value
+    -> (value -> String)
+    -> Maybe value
+    -> Model value
+init parser printer = advancedInit parser printer
 
 {-| -}
 type alias AdvancedModel context problem value =
@@ -81,18 +92,13 @@ type alias AdvancedModel context problem value =
     , input : Maybe String
     }
 
-
-type alias Model value =
-    AdvancedModel Never SimpleParser.Problem value
-
-
 {-| -}
-init :
+advancedInit :
     Parser context problem value
     -> (value -> String)
     -> Maybe value
     -> AdvancedModel context problem value
-init parser printer value =
+advancedInit parser printer value =
     { focused = False
     , parser = parser
     , value = value
