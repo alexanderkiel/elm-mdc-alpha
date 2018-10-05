@@ -227,7 +227,7 @@ view requiredConfig model properties children =
             not <| List.isEmpty model.parseError
 
         focused =
-            model.focused && not config.disabled || isInvalid
+            (model.focused && not config.disabled) || isInvalid
 
         finalValue =
             if focused then
