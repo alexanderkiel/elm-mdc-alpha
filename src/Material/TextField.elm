@@ -1,6 +1,5 @@
 module Material.TextField exposing
-    ( AdvancedModel
-    , Model
+    ( Model
     , init
     , Msg
     , update
@@ -10,6 +9,7 @@ module Material.TextField exposing
     , label
     , withLeadingIcon
     , withTrailingIcon
+    , AdvancedModel
     )
 
 {-| Text fields let users enter and edit text.
@@ -71,17 +71,21 @@ import Parser.Advanced as Parser exposing (Parser)
 
 ---- MODEL --------------------------------------------------------------------
 
+
 {-| -}
 type alias Model value =
     AdvancedModel Never SimpleParser.Problem value
 
+
 {-| -}
-init : 
+init :
     SimpleParser.Parser value
     -> (value -> String)
     -> Maybe value
     -> Model value
-init parser printer = advancedInit parser printer
+init parser printer =
+    advancedInit parser printer
+
 
 {-| -}
 type alias AdvancedModel context problem value =
@@ -91,6 +95,7 @@ type alias AdvancedModel context problem value =
     , parseError : List (Parser.DeadEnd context problem)
     , input : Maybe String
     }
+
 
 {-| -}
 advancedInit :
