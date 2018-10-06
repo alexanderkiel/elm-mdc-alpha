@@ -1,7 +1,6 @@
 port module Main exposing (Model)
 
 import Browser
-import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -12,8 +11,6 @@ import Material.Options as Options
 import Material.TextField as TextField
 import Material.TextField.HelperText as HelperText
 import Parser as Parser exposing (..)
-import Url exposing (Url)
-import Url.Parser as UrlParser
 
 
 type alias Model =
@@ -43,25 +40,17 @@ init flags =
 
 
 type Msg
-    = Inc
-    | Set Int
-    | Fun (Int -> Int)
-    | ChangedText TextField.Msg
+    = Fun (Int -> Int)
+    | TextFieldMsg TextField.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        Inc ->
-            ( updateCounter (\n -> n + 1) model, Cmd.none )
-
-        Set newCounter ->
-            ( updateCounter (\_ -> newCounter) model, Cmd.none )
-
         Fun f ->
             ( updateCounter f model, Cmd.none )
 
-        ChangedText tfMsg ->
+        TextFieldMsg tfMsg ->
             ( { model | textFieldModel = TextField.update tfMsg model.textFieldModel }, Cmd.none )
 
 
@@ -131,7 +120,7 @@ myTextFieldView : Model -> Html Msg
 myTextFieldView { textFieldModel } =
     Html.div []
         [ TextField.view
-            { lift = ChangedText, printer = identity }
+            { lift = TextFieldMsg, printer = identity }
             textFieldModel
             [ TextField.label "Label of input"
 
