@@ -1,13 +1,13 @@
 module Material.TextField exposing
     ( Model
     , init
-    , AdvancedModel
     , Msg
     , update
     , view
     , fullWidth
     , outlined
     , label
+    , AdvancedModel
     )
 
 {-| Text fields let users enter and edit text.
@@ -26,14 +26,9 @@ In your Sass file import:
 
 # Model
 
+@docs SimpleModel
 @docs Model
 @docs init
-
-
-# Advanced Model
-
-@docs AdvancedModel
-@docs advancedInit
 
 
 # Update
