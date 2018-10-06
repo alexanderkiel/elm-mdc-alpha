@@ -205,11 +205,11 @@ view requiredConfig model properties _ =
         ({ config } as summary) =
             Options.collect (defaultConfig requiredConfig) properties
 
-        focused =
-            model.focused && not config.disabled
-
         isInvalid =
             not <| List.isEmpty model.parseError
+
+        focused =
+            model.focused && not config.disabled || isInvalid
 
         finalValue =
             if focused then
