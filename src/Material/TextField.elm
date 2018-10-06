@@ -294,6 +294,25 @@ view requiredConfig model properties _ =
                 Icon.view
                     [ Options.class "mdc-text-field__icon" ]
                     (config.trailingIcon |> Maybe.withDefault "unknown")
+
+        inputOrTextAreaView =
+            styled
+                (if config.textarea then
+                    Html.textarea
+
+                 else
+                    Html.input
+                )
+                [ class "mdc-text-field__input"
+                , Options.id config.id
+                , when (not config.textarea) <|
+                    Options.attribute (Attr.type_ config.type_)
+                , Options.attribute <| Attr.value finalValue
+                , Options.onFocus <| config.lift Focus
+                , Options.onBlur <| config.lift Blur
+                , Options.onInput <| (config.lift << Input)
+                ]
+                []
     in
     Options.apply summary
         Html.div
@@ -310,24 +329,7 @@ view requiredConfig model properties _ =
         ]
         []
         [ leadingIconView
-        , -- input or textArea
-          styled
-            (if config.textarea then
-                Html.textarea
-
-             else
-                Html.input
-            )
-            [ class "mdc-text-field__input"
-            , Options.id config.id
-            , when (not config.textarea) <|
-                Options.attribute (Attr.type_ config.type_)
-            , Options.attribute <| Attr.value finalValue
-            , Options.onFocus <| config.lift Focus
-            , Options.onBlur <| config.lift Blur
-            , Options.onInput <| (config.lift << Input)
-            ]
-            []
+        , inputOrTextAreaView
         , labelView
         , trailingIconView
         , if config.outlined then
