@@ -1,6 +1,7 @@
 module Material.TextField exposing
     ( Model
     , init
+    , AdvancedModel
     , Msg
     , update
     , view
@@ -27,6 +28,12 @@ In your Sass file import:
 
 @docs Model
 @docs init
+
+
+# Advanced Model
+
+@docs AdvancedModel
+@docs advancedInit
 
 
 # Update
@@ -57,6 +64,7 @@ In your Sass file import:
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Material.Internal.Options as Options exposing (class, styled, when)
+import Parser as SimpleParser exposing (Problem)
 import Parser.Advanced as Parser exposing (Parser)
 
 
@@ -65,7 +73,22 @@ import Parser.Advanced as Parser exposing (Parser)
 
 
 {-| -}
-type alias Model context problem value =
+type alias Model value =
+    AdvancedModel Never SimpleParser.Problem value
+
+
+{-| -}
+init :
+    SimpleParser.Parser value
+    -> (value -> String)
+    -> Maybe value
+    -> Model value
+init parser printer =
+    advancedInit parser printer
+
+
+{-| -}
+type alias AdvancedModel context problem value =
     { focused : Bool
     , parser : Parser context problem value
     , value : Maybe value
@@ -75,12 +98,12 @@ type alias Model context problem value =
 
 
 {-| -}
-init :
+advancedInit :
     Parser context problem value
     -> (value -> String)
     -> Maybe value
-    -> Model context problem value
-init parser printer value =
+    -> AdvancedModel context problem value
+advancedInit parser printer value =
     { focused = False
     , parser = parser
     , value = value
@@ -101,7 +124,7 @@ type Msg
 
 
 {-| -}
-update : Msg -> Model context problem value -> Model context problem value
+update : Msg -> AdvancedModel context problem value -> AdvancedModel context problem value
 update msg model =
     case msg of
         Focus ->
@@ -196,7 +219,7 @@ type alias Property msg value =
 {-| -}
 view :
     RequiredConfig msg value
-    -> Model context problem value
+    -> AdvancedModel context problem value
     -> List (Property msg value)
     -> List (Html msg)
     -> Html msg
