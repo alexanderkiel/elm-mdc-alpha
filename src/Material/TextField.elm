@@ -7,6 +7,8 @@ module Material.TextField exposing
     , fullWidth
     , outlined
     , label
+    , leadingIcon
+    , trailingIcon
     )
 
 {-| Text fields let users enter and edit text.
@@ -45,6 +47,8 @@ In your Sass file import:
 @docs fullWidth
 @docs outlined
 @docs label
+@docs leadingIcon
+@docs trailingIcon
 
 
 # Reference
@@ -56,6 +60,7 @@ In your Sass file import:
 
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Material.Icon as Icon
 import Material.Internal.Options as Options exposing (class, styled, when)
 import Parser.Advanced as Parser exposing (Parser)
 
@@ -205,6 +210,27 @@ view requiredConfig model properties _ =
         ({ config } as summary) =
             Options.collect (defaultConfig requiredConfig) properties
 
+        labelView =
+            -- no label in fullWidth
+            if not config.fullWidth then
+                styled
+                    Html.label
+                    [ class "mdc-floating-label"
+                    , class "mdc-floating-label--float-above"
+                        |> when (focused || isDirty)
+                    , Options.for config.id
+                    ]
+                    (case config.labelText of
+                        Just str ->
+                            [ Html.text str ]
+
+                        Nothing ->
+                            []
+                    )
+
+            else
+                Html.text ""
+
         isInvalid =
             not <| List.isEmpty model.parseError
 
@@ -222,6 +248,22 @@ view requiredConfig model properties _ =
 
         isDirty =
             finalValue /= ""
+
+        iconAllowed =
+            -- only in default or outline mode
+            not config.textarea
+
+        iconView icon =
+            case icon of
+                Just name ->
+                    if not iconAllowed then
+                        Html.text ""
+
+                    else
+                        Icon.view [ Options.class "mdc-text-field__icon" ] name
+
+                Nothing ->
+                    Html.text ""
     in
     Options.apply summary
         Html.div
@@ -233,9 +275,15 @@ view requiredConfig model properties _ =
         , class "mdc-text-field--invalid" |> when isInvalid
         , class "mdc-text-field--textarea" |> when config.textarea
         , class "mdc-text-field--outlined" |> when config.outlined
+        , class "mdc-text-field--with-leading-icon"
+            |> when (config.leadingIcon /= Nothing && iconAllowed)
+        , class "mdc-text-field--with-trailing-icon"
+            |> when (config.trailingIcon /= Nothing && iconAllowed)
         ]
         []
-        [ styled
+        [ iconView config.leadingIcon
+        , -- input or textArea
+          styled
             (if config.textarea then
                 Html.textarea
 
@@ -252,21 +300,11 @@ view requiredConfig model properties _ =
             , Options.onInput <| (config.lift << Input)
             ]
             []
-        , if not config.fullWidth then
-            styled
-                Html.label
-                [ class "mdc-floating-label"
-                , class "mdc-floating-label--float-above"
-                    |> when (focused || isDirty)
-                , Options.for config.id
-                ]
-                (case config.labelText of
-                    Just str ->
-                        [ Html.text str ]
-
-                    Nothing ->
-                        []
-                )
+        , labelView
+        , iconView config.trailingIcon
+        , if config.outlined then
+            -- TODO how should we add svg for outlined and label above problem
+            styled Html.div [ class "mdc-notched-outline__idle" ] []
 
           else
             Html.text ""
@@ -298,3 +336,15 @@ outlined =
 label : String -> Property msg value
 label str =
     Options.updateConfig (\config -> { config | labelText = Just str })
+
+
+{-| -}
+leadingIcon : String -> Property msg value
+leadingIcon iconName =
+    Options.updateConfig (\config -> { config | leadingIcon = Just iconName })
+
+
+{-| -}
+trailingIcon : String -> Property msg value
+trailingIcon iconName =
+    Options.updateConfig (\config -> { config | trailingIcon = Just iconName })
