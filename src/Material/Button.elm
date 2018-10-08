@@ -22,7 +22,18 @@ In your Sass file import:
 
     @import "@material/button/mdc-button";
 
+# Simple usages example
 
+import Material.Button as Button
+import Material.Options as Options
+
+Button.view 
+    [ Options.onClick Inc 
+    , Button.disabled False
+    , Button.raised
+    ] 
+    [ Html.text "Plus 1" ]
+    
 # View
 
 @docs view
