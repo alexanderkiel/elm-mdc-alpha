@@ -1,5 +1,6 @@
 module Material.TextField exposing
     ( Model
+    , SimpleModel
     , init
     , Msg
     , update
@@ -28,6 +29,7 @@ In your Sass file import:
 # Model
 
 @docs Model
+@docs SimpleModel
 @docs init
 
 
@@ -62,6 +64,7 @@ import Html exposing (Html)
 import Html.Attributes as Attr
 import Material.Icon as Icon
 import Material.Internal.Options as Options exposing (class, styled, when)
+import Parser as SimpleParser
 import Parser.Advanced as Parser exposing (Parser)
 
 
@@ -69,7 +72,9 @@ import Parser.Advanced as Parser exposing (Parser)
 ---- MODEL --------------------------------------------------------------------
 
 
-{-| -}
+{-| The full model requires the type params `context` and `problem` as defined
+in `Parser.Advanced`. Use `SimpleModel` if you plan to use a normal parser.
+-}
 type alias Model context problem value =
     { focused : Bool
     , parser : Parser context problem value
@@ -77,6 +82,12 @@ type alias Model context problem value =
     , parseError : List (Parser.DeadEnd context problem)
     , input : Maybe String
     }
+
+
+{-| The simple model should be used if a normal parser is sufficient.
+-}
+type alias SimpleModel value =
+    Model Never SimpleParser.Problem value
 
 
 {-| -}
